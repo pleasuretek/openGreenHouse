@@ -1,0 +1,7 @@
+openGreenHouse is a project that aims to make gardening and greenhouse control easier by automating some of the process.
+
+It consists of two parts. A computer that runs software to keep track of state and time, and an arduino to connect to the physical world. The arduino (or similar microcontroller) listens for commands, and can turn things on or off (via relays) or send back data (temperature, humidity, c02, PH, EC). 
+
+The control software uses Qt libs for gui and C++, which makes it cross-platform with a native look and feel. The control software takes care of keeping timers, set point control of temp or humidity, and logging the sensor data in a database for display.
+
+DISCLAIMER:: The electricity needed to run a greenhouse is a dangerous amount of current!! You run the risk of Elecric shock or death if you contact a live circuit.  If you do not know what you are doing consult an electrician to set up some of the hardware. Any programmer of this software collection is not in any way responsible if you hurt yourself.

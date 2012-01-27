@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/GroMo/!svn/ver/28/branches/hardware/QHardwareKontrol
+END
+QAsyncSerial.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/GroMo/!svn/ver/30/branches/hardware/QHardwareKontrol/QAsyncSerial.cpp
+END
+sensorgraph.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/GroMo/!svn/ver/26/branches/hardware/QHardwareKontrol/sensorgraph.h
+END
+mainwindow.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/GroMo/!svn/ver/31/branches/hardware/QHardwareKontrol/mainwindow.h
+END
+QHardwareKontrol.pro.user
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/GroMo/!svn/ver/29/branches/hardware/QHardwareKontrol/QHardwareKontrol.pro.user
+END
+AsyncSerial.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/GroMo/!svn/ver/30/branches/hardware/QHardwareKontrol/AsyncSerial.h
+END
+QAsyncSerial.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/GroMo/!svn/ver/30/branches/hardware/QHardwareKontrol/QAsyncSerial.h
+END
+main.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/GroMo/!svn/ver/12/branches/hardware/QHardwareKontrol/main.cpp
+END
+QHardwareKontrol.pro
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/GroMo/!svn/ver/26/branches/hardware/QHardwareKontrol/QHardwareKontrol.pro
+END
+sensorgraph.ui
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/GroMo/!svn/ver/21/branches/hardware/QHardwareKontrol/sensorgraph.ui
+END
+mainwindow.ui
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/GroMo/!svn/ver/29/branches/hardware/QHardwareKontrol/mainwindow.ui
+END
+sensorgraph.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/GroMo/!svn/ver/26/branches/hardware/QHardwareKontrol/sensorgraph.cpp
+END
+mainwindow.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/GroMo/!svn/ver/31/branches/hardware/QHardwareKontrol/mainwindow.cpp
+END
+AsyncSerial.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/GroMo/!svn/ver/30/branches/hardware/QHardwareKontrol/AsyncSerial.cpp
+END
