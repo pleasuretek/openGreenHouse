@@ -4,6 +4,10 @@
 
 # install depends
 # install software
+apt-get install motion 
+
+#configure software
+
 # setup firewall script
 # setup startup
 # exit
