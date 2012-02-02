@@ -14,15 +14,24 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     QAsyncSerial.cpp \
     AsyncSerial.cpp \
-    sensorgraph.cpp
+    sensorgraph.cpp \
+    sensors.cpp \
+    timer.cpp \
+    target.cpp
 
 HEADERS  += mainwindow.h \
     QAsyncSerial.h \
     AsyncSerial.h \
-    sensorgraph.h
+    sensorgraph.h \
+    sensors.h \
+    timer.h \
+    target.h
 
 FORMS    += mainwindow.ui \
-    sensorgraph.ui
+    sensorgraph.ui \
+    sensors.ui \
+    timer.ui \
+    target.ui
 
 LIBS += -L/usr/include \
     -lboost_system \
