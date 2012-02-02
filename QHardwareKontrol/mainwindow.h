@@ -1,12 +1,36 @@
+/*
+QHardwareKontrol is part of the openGreenHouse package of software sources
+
+Written by: Travis McCann
+Copywrite GPL 2010-2012
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtGui>
+#include <QMessageBox>
 #include <QtSql>
 #include <QTimer>
 #include <QTime>
 #include "QAsyncSerial.h"
-#include "sensorgraph.h"
+#include "sensors.h"
+#include "timer.h"
+#include "target.h"
 
 
 namespace Ui {
@@ -27,30 +51,25 @@ private:
     QAsyncSerial serial;
     QSqlDatabase db;
     QTimer *timer;
-    SensorGraph *sg;
-    QTime lastOn;
-    QTime lastOff;
 
-    float ptemp;  //previous temperature
-    float phumid; //previous humidity
+    Sensors *sens;
+    Timer *relay01;
+    Timer *relay02;
+    Target *relay03;
+    Target *relay04;
+    Timer *relay05;
+    Timer *relay06;
+
 
 
     void dbConnect();
 
-    void updateTempsView();
-    void updateHumidView();
 
 
 private slots:
     void onLineReceived(QString data);
-    void getSensorData();
     void checkTime();
-    void checkTemp();
-    void checkHumid();
 
-    //void setBloomTimer();  //
-
-    void showGraph();
 };
 
 
