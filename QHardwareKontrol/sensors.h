@@ -36,8 +36,8 @@ public:
     explicit Sensors(QWidget *parent = 0);
     ~Sensors();
 
-    void updateTempsView();
-    void updateHumidView();
+    void updateTempsView(QString,QString);
+    void updateHumidView(QString);
 
     QString checkTempCmd();
     QString checkHumidCmd();
@@ -52,6 +52,9 @@ private:
     Ui::Sensors *ui;
 
     SensorGraph *sg;
+
+    QStringList addrList;     //list of unique addresses found in database
+    void cacheAddr();
 
 
 private slots:

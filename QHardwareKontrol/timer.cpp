@@ -37,7 +37,7 @@ Timer::Timer(QWidget *parent, int id) :
     this->on_revertBtn_clicked();   //read values from database
 
     cacheTimes();
-    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTimerSignal()));
+    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(update()));
 }
 
 Timer::~Timer()
@@ -63,9 +63,8 @@ void Timer::cacheTimes() {
     }
 }
 
-QString Timer::check() {
+QString Timer::check(QTime now) {
     QString cmd;  //serial command
-    QTime now = QTime::currentTime();
 
     if (offTime > onTime) {
         if((now > onTime) && (now < offTime)) {
@@ -154,7 +153,7 @@ void Timer::on_updateBtn_clicked()
             }
         }
         cacheTimes();
-        emit updateTimerSignal();
+        emit update();
     } else {  //confirm() returned false
 
     }

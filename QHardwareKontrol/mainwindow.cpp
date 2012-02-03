@@ -40,27 +40,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
     relay01 = new Timer(this,1);   //lowpower relay
     relay01->setTitle("Bloom Light Timer");
-    connect(relay01, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+    connect(relay01, SIGNAL(update()), this, SLOT(checkRelays()));
 
     relay02 = new Timer(this,2);   //lowpower relay
     relay02->setTitle("Bloom Osc Fan Timer 1");
-    connect(relay02, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+    connect(relay02, SIGNAL(update()), this, SLOT(checkRelays()));
 
     relay03 = new Timer(this,3);   //lowpower relay
     relay03->setTitle("Veg Fan Timer");
-    connect(relay03, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+    connect(relay03, SIGNAL(update()), this, SLOT(checkRelays()));
 
-    relay04 = new Target(this,4,0);   //high power relay
-    relay04->setTitle("Bloom Target Temp");
-    connect(relay04, SIGNAL(updateTargetSignal()), this, SLOT(checkRelays()));
+    relay04 = new Timer(this,4);   //high power relay
+    relay04->setTitle("Veg Light Timer");
+    connect(relay04, SIGNAL(update()), this, SLOT(checkRelays()));
 
     relay05 = new Target(this,5,1);    //high power relay
     relay05->setTitle("Target Humid");
-    connect(relay05, SIGNAL(updateTargetSignal()), this, SLOT(checkRelays()));
+    connect(relay05, SIGNAL(update), this, SLOT(checkRelays()));
 
-    relay06 = new Timer(this,6);   //high power relay
-    relay06->setTitle("Veg Light Timer");
-    connect(relay06, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+    relay06 = new Target(this,6,0);   //high power relay
+    relay06->setTitle("Bloom Target Temp");
+    connect(relay06, SIGNAL(update), this, SLOT(checkRelays()));
 
     QWidget *main = new QWidget(this);
     QWidget *relayKeeper = new QWidget(this);
@@ -134,13 +134,13 @@ void MainWindow::onLineReceived(QString data) {
             q.bindValue(":address", list.at(1));
             q.bindValue(":temp", list.at(2));
             q.exec();
-            sens->updateTempsView();
+            sens->updateTempsView(list.at(1),list.at(2));
         }else if(list.at(0) == "H") { //the type is humidity
             QSqlQuery q;
             q.prepare("INSERT INTO Humid (humid) VALUES (:humid)");
             q.bindValue(":humid",list.at(1));
             q.exec();
-            sens->updateHumidView();
+            sens->updateHumidView(list.at(1));
         }
     }
 
@@ -150,13 +150,14 @@ void MainWindow::onLineReceived(QString data) {
 
 void MainWindow::checkRelays() {
     //check relays
-    serial.write(relay01->check());
+    QTime now = QTime::currentTime();
+    serial.write(relay01->check(now));
     //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
-    serial.write(relay02->check());
+    serial.write(relay02->check(now));
     //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
-    serial.write(relay03->check());
+    serial.write(relay03->check(now));
     //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
-    serial.write(relay04->check());
+    serial.write(relay04->check(now));  //relay04 is target, does not need time
     //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay05->check());
     //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
@@ -173,7 +174,5 @@ void MainWindow::checkSensors() {
     serial.write(sens->checkHumidCmd());
     //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
-    sens->updateTempsView();
-    sens->updateHumidView();
 }
 

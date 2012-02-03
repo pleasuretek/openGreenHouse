@@ -37,7 +37,7 @@ Target::Target(QWidget *parent, int id, int md) :
     mode = md;   //mode 0 = temps; 1 = humidity; 2 = c02
 
     cacheTarget();  //read values from database
-    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTargetSignal()));
+    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(update()));
     connect(ui->revertBtn, SIGNAL(clicked()), this, SLOT(cacheTarget()));
 }
 
@@ -169,7 +169,7 @@ void Target::on_updateBtn_clicked()
             }
         }
         cacheTarget();
-        emit updateTargetSignal();
+        emit update();
     }
 }
 

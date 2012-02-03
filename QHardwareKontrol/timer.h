@@ -38,11 +38,11 @@ public:
     explicit Timer(QWidget *parent, int id);
     ~Timer();
 
-    QString check();
+    QString check(QTime);
     void setTitle(QString);
 
 signals:
-    void updateTimerSignal();
+    void update();
 
 
 private slots:

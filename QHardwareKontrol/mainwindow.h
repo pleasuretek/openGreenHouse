@@ -59,9 +59,9 @@ private:
     Timer *relay01;
     Timer *relay02;
     Timer *relay03;
-    Target *relay04;
+    Timer *relay04;
     Target *relay05;
-    Timer *relay06;
+    Target *relay06;
 
 
 

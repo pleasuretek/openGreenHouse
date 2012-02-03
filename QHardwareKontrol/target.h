@@ -43,7 +43,7 @@ public:
     QString check();
 
 signals:
-    void updateTargetSignal();
+    void update();
 
 private slots:
     void on_updateBtn_clicked();

@@ -29,6 +29,7 @@ Sensors::Sensors(QWidget *parent) :
     sg = new SensorGraph();
     sg->hide();
 
+    cacheAddr();
     connect(ui->graphBtn, SIGNAL(clicked()), this, SLOT(showGraph()));
     connect(ui->updateTempBtn, SIGNAL(clicked()), this, SIGNAL(updateSensorBtnClicked()));
 
@@ -39,9 +40,9 @@ Sensors::~Sensors()
     delete ui;
 }
 
-void Sensors::updateTempsView() {
-    //find unique addresses in database first
-    QStringList list;
+void Sensors::cacheAddr() {
+    //find unique addresses in database
+    addrList.clear();
     QSqlQuery q;
     q.prepare("SELECT DISTINCT address FROM Temps");
     if(!q.exec()) {
@@ -51,47 +52,37 @@ void Sensors::updateTempsView() {
         err.exec();
     }
     while (q.next()) {
-        list.append(q.value(0).toString());    //list of unique addresses found in database
+        addrList.append(q.value(0).toString());
         // qDebug() << q.value(0).toString();
     }
+}
 
-    if(!list.isEmpty()){
-        //now select most recent for each address
-        int i =0;  //i is count for each individual address
-        while (i<list.count()){
-            q.clear();
-            q.prepare("SELECT temp FROM Temps WHERE address = :address ORDER BY time DESC LIMIT 1");
-            q.bindValue(":address", list.at(i));
-            q.exec();
-            while (q.next()){
-                switch(i){  //TODO: rather than switch on i, find a way to relate unique addresses to gui elements (and be able to customize gui elements and rename labels by user)
-                case 0:
-                    ui->tempLabel01->setText(q.value(0).toString());
-                    //qDebug() << q.value(0).toString();
-                    break;
-                case 1:
-                    ui->tempLabel02->setText(q.value(0).toString());
-                    //qDebug() << q.value(0).toString();
-                    break;
-                case 2:
-                    ui->tempLabel03->setText(q.value(0).toString());
-                    //qDebug() << q.value(0).toString();
-                    break;
+void Sensors::updateTempsView(QString addr, QString temp) {
+    if(!addrList.isEmpty()){
+        if(addrList.contains(addr)) {
+            for (int i = 0; i < addrList.count(); i++) {
+                if(addrList.at(i) == addr) {
+                    switch(i){
+                    case 0:
+                        ui->tempLabel01->setText(temp);
+                        break;
+                    case 1:
+                        ui->tempLabel02->setText(temp);
+                        break;
+                    case 2:
+                        ui->tempLabel03->setText(temp);
+                        break;
+                    default:
+                        break;
+                    }
                 }
             }
-            i++;
         }
     }
 }
 
-void Sensors::updateHumidView() {
-    QSqlQuery q;
-    q.prepare("SELECT humid FROM Humid ORDER BY time DESC LIMIT 1");
-    q.exec();
-    while(q.next()){
-        ui->humidLabel->setText(q.value(0).toString());
-    }
-
+void Sensors::updateHumidView(QString humid) {
+    ui->humidLabel->setText(humid);
 }
 
 QString Sensors::checkTempCmd() {
