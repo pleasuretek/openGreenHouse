@@ -27,10 +27,11 @@ Sensors::Sensors(QWidget *parent) :
     ui->setupUi(this);
 
     sg = new SensorGraph();
-    showGraph(false);
+    sg->hide();
 
     connect(ui->graphBtn, SIGNAL(clicked()), this, SLOT(showGraph()));
-   // connect(ui->updateTempBtn, SIGNAL(clicked()), this, SLOT(checkTemp()));
+    connect(ui->updateTempBtn, SIGNAL(clicked()), this, SIGNAL(updateSensorBtnClicked()));
+
 }
 
 Sensors::~Sensors()
@@ -43,7 +44,12 @@ void Sensors::updateTempsView() {
     QStringList list;
     QSqlQuery q;
     q.prepare("SELECT DISTINCT address FROM Temps");
-    q.exec();
+    if(!q.exec()) {
+        QMessageBox err;
+        err.setText("Data Base Error");
+        err.setInformativeText(q.lastError().text());
+        err.exec();
+    }
     while (q.next()) {
         list.append(q.value(0).toString());    //list of unique addresses found in database
         // qDebug() << q.value(0).toString();
@@ -100,10 +106,8 @@ QString Sensors::checkHumidCmd() {
     return cmd;
 }
 
-void Sensors::showGraph(bool show) {
-    if(show) {
+void Sensors::showGraph() {
+
         sg->show();
-    } else {
-        sg->hide();
-    }
+
 }

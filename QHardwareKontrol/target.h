@@ -42,6 +42,9 @@ public:
     void setLabel(QString);
     QString check();
 
+signals:
+    void updateTargetSignal();
+
 private slots:
     void on_updateBtn_clicked();
 

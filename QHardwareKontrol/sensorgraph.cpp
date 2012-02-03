@@ -51,14 +51,14 @@ void SensorGraph::drawPlot() {
     while (q.next()) {
         QString address = q.value(0).toString();
         list.append(address);               //add each address to the list
-        qDebug() << "address : " << q.value(0).toString();
+        //qDebug() << "address : " << q.value(0).toString();
         q.clear();
         q.prepare("SELECT temp, time FROM Temps WEHRE address = :address ORDER BY time DESC LIMIT 200");
         q.bindValue(":address",address);
         q.exec();
         while (q.next()) {
-            //add temps to array
-            //add timestamps to qwt plot label
+            //add temps to array of doubles
+            //add timestamps to qwt plot label and convert timestamp to ordered double
         }
     }
 

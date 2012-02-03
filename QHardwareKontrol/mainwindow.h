@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtSql>
 #include <QTimer>
 #include <QTime>
+#include <boost/thread.hpp>
 #include "QAsyncSerial.h"
 #include "sensors.h"
 #include "timer.h"
@@ -53,11 +54,13 @@ private:
     QTimer *timer;
 
     Sensors *sens;
+
+    //TODO: make Timer and Target inheret from same base abstract class.. implement better polymorphism here
     Timer *relay01;
     Timer *relay02;
-    Target *relay03;
+    Timer *relay03;
     Target *relay04;
-    Timer *relay05;
+    Target *relay05;
     Timer *relay06;
 
 
@@ -68,7 +71,8 @@ private:
 
 private slots:
     void onLineReceived(QString data);
-    void checkTime();
+    void checkRelays();
+    void checkSensors();
 
 };
 

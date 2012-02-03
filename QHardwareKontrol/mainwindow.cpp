@@ -27,37 +27,45 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("QGrowRoomController");
+    this->setWindowTitle("Open GreenHouse Hardware Control");
 
     //TODO: make a chooser to allow user to select which port --probably in a prefs widget
-    serial.open("/dev/ttyUSB0",9600);  //open serial port
+    serial.open("/dev/ttyUSB0",115200);  //open serial port
     connect(&serial, SIGNAL(lineReceived(QString)), this, SLOT(onLineReceived(QString)));
 
     dbConnect();  //open database
 
+    sens = new Sensors(this);
+    connect(sens, SIGNAL(updateSensorBtnClicked()), this, SLOT(checkSensors()));
+
+    relay01 = new Timer(this,1);   //lowpower relay
+    relay01->setTitle("Bloom Light Timer");
+    connect(relay01, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+
+    relay02 = new Timer(this,2);   //lowpower relay
+    relay02->setTitle("Bloom Osc Fan Timer 1");
+    connect(relay02, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+
+    relay03 = new Timer(this,3);   //lowpower relay
+    relay03->setTitle("Veg Fan Timer");
+    connect(relay03, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+
+    relay04 = new Target(this,4,0);   //high power relay
+    relay04->setTitle("Bloom Target Temp");
+    connect(relay04, SIGNAL(updateTargetSignal()), this, SLOT(checkRelays()));
+
+    relay05 = new Target(this,5,1);    //high power relay
+    relay05->setTitle("Target Humid");
+    connect(relay05, SIGNAL(updateTargetSignal()), this, SLOT(checkRelays()));
+
+    relay06 = new Timer(this,6);   //high power relay
+    relay06->setTitle("Veg Light Timer");
+    connect(relay06, SIGNAL(updateTimerSignal()), this, SLOT(checkRelays()));
+
     QWidget *main = new QWidget(this);
     QWidget *relayKeeper = new QWidget(this);
 
-    sens = new Sensors(this);
-    relay01 = new Timer(this,1);
-    relay01->setTimerLabel("Bloom Light Timer");
-
-    relay02 = new Timer(this,2);
-    relay02->setTimerLabel("Osc Fan Timer 1");
-
-    relay03 = new Target(this,3,0);   //relay 3, mode 0 (for target temp)
-    relay03->setTitle("Target Temp");
-
-    relay04 = new Target(this,4,1);   //relay 4, mode 1 (for target humid)
-    relay04->setTitle("Target Humid");
-
-    relay05 = new Timer(this,5);
-    relay05->setTimerLabel("");
-
-    relay06 = new Timer(this,6);
-    relay06->setTimerLabel("");
-
-    QVBoxLayout *relayLayout = new QVBoxLayout(this);
+    QVBoxLayout *relayLayout = new QVBoxLayout();
     relayLayout->addWidget(relay01);
     relayLayout->addWidget(relay02);
     relayLayout->addWidget(relay03);
@@ -70,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QScrollArea *sa = new QScrollArea(this);
     sa->setWidget(relayKeeper);
 
-    QVBoxLayout *vl = new QVBoxLayout(this);
+    QVBoxLayout *vl = new QVBoxLayout();
     vl->addWidget(sens);
     vl->addWidget(sa);
 
@@ -80,10 +88,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     timer = new QTimer(this); //start relay timer
-    connect(timer, SIGNAL(timeout()), this, SLOT(checkTime()));   //make checkTime fire on timer signal
-    timer->start(30000);   //set to 300000  = 5minutes
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkRelays()));   //make checkRelays fire on timer signal
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkSensors()));  //make checkSensors fire on timer signal
+    timer->start(20000);   //set to 300000  = 5minutes
 
-    checkTime();  //set relays on startup
+    checkRelays();  //set relays on startup
+    checkSensors();  //give the sensors a check too
 
 }
 
@@ -101,7 +111,7 @@ void MainWindow::dbConnect(){
     db.setHostName("localhost");
     db.setDatabaseName("SensorData");
     db.setUserName("root");
-    db.setPassword("");  //Enter password for database user
+    db.setPassword("fuck.Y0u!23garden");  //Enter password for database user
 
     if(!db.open()) {
         qDebug() << "Database Error : ";
@@ -137,18 +147,31 @@ void MainWindow::onLineReceived(QString data) {
 
 }
 
-void MainWindow::checkTime() { //this fires on timer signal
+
+void MainWindow::checkRelays() {
     //check relays
     serial.write(relay01->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay02->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay03->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay04->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay05->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(relay06->check());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
+
+}
+
+void MainWindow::checkSensors() {
 
     // check sensors
     serial.write(sens->checkTempCmd());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(5) );
     serial.write(sens->checkHumidCmd());
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
     sens->updateTempsView();
     sens->updateHumidView();

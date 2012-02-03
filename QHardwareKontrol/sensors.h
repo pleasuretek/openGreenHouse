@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SENSORS_H
 
 #include <QWidget>
+#include <QMessageBox>
 #include "sensorgraph.h"
 
 namespace Ui {
@@ -43,6 +44,9 @@ public:
 
 public slots:
 
+signals:
+    void updateSensorBtnClicked();
+
 
 private:
     Ui::Sensors *ui;
@@ -52,7 +56,7 @@ private:
 
 private slots:
 
-    void showGraph(bool);
+    void showGraph();
 
 
 };

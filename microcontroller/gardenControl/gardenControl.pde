@@ -160,57 +160,57 @@ void loop(void)
         //relay01
         if( relayPos == "on"){
           digitalWrite(RELAY01, HIGH);
-          reply(command);
+          //reply(command);
         } else  if (relayPos == "off"){
           digitalWrite(RELAY01, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 50:   //ascii '2'
         //relay02
         if( relayPos == "on"){
           digitalWrite(RELAY02, HIGH);
-          reply(command);
+          //reply(command);
         } else if (relayPos == "off"){
           digitalWrite(RELAY02, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 51:     //ascii '3'
         //relay03
         if( relayPos == "on"){
           digitalWrite(RELAY03, HIGH);
-          reply(command);
+          //reply(command);
         } else if (relayPos == "off"){
           digitalWrite(RELAY03, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 52: //ascii '4'
         if( relayPos == "on"){
           digitalWrite(RELAY04, HIGH);
-          reply(command);
+          //reply(command);
         } else if (relayPos == "off"){
           digitalWrite(RELAY04, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 53:   //ascii '5'
         if( relayPos == "on"){
           digitalWrite(RELAY05, HIGH);
-          reply(command);
+          //reply(command);
         } else if (relayPos == "off"){
           digitalWrite(RELAY05, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 54:  //ascii '6'
         if( relayPos == "on"){
           digitalWrite(RELAY05, HIGH);
-          reply(command);
+          //reply(command);
         } else if (relayPos == "off"){
           digitalWrite(RELAY05, LOW);
-          reply(command);
+          //reply(command);
         }
         break;
       case 84:    //ascii 'T'

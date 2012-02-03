@@ -39,7 +39,10 @@ public:
     ~Timer();
 
     QString check();
-    void setTimerLabel(QString);
+    void setTitle(QString);
+
+signals:
+    void updateTimerSignal();
 
 
 private slots:

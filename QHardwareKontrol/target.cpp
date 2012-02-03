@@ -25,7 +25,7 @@ Target::Target(QWidget *parent) :
     ui(new Ui::Target)
 {
     ui->setupUi(this);
-    relayID = 0; //init to invalid
+    relayID = 0; //init to invalid relayID
 }
 
 Target::Target(QWidget *parent, int id, int md) :
@@ -37,6 +37,7 @@ Target::Target(QWidget *parent, int id, int md) :
     mode = md;   //mode 0 = temps; 1 = humidity; 2 = c02
 
     this->on_revertBtn_clicked();  //read values from database
+    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTargetSignal()));
 }
 
 Target::~Target()
@@ -59,21 +60,45 @@ QString Target::check() {
     float target, val;
     QSqlQuery q;
     q.prepare("SELECT target FROM Target WHERE relayID = :relayID");
-    q.bindValue(":relayID",relayID);
-    q.exec();
+    q.bindValue(":relayID",relayID.toInt());
+    if(!q.exec()) {
+        QMessageBox err;
+        err.setText("Data Base Error");
+        err.setInformativeText(q.lastError().text());
+        err.exec();
+    }
     while(q.next()) {
         target = q.value(0).toFloat();
     }
 
     switch(mode.toInt()){
-    case 0:
-        q.prepare("SELECT temp FROM Temps ORDER BY time DESC LIMIT 1");
-        q.exec();
-        while (q.next()) {
-            val = q.value(0).toFloat();     //average the two sensors in the room
-            val += q.value(1).toFloat();
-            val = val/2.0;
+    case 0:    //temperature target
+        float valb;
+
+        q.prepare("SELECT temp FROM Temps ORDER BY time DESC LIMIT 3"); //select address instead..
+        if(!q.exec()) {
+            QMessageBox err;
+            err.setText("Data Base Error");
+            err.setInformativeText(q.lastError().text());
+            err.exec();
         }
+
+        int it;
+        it = 0;
+        while (q.next()) {
+
+            if( it == 1) {
+                val = q.value(0).toFloat();
+            } else if (it == 2) {
+                valb = q.value(0).toFloat();
+            }
+            it++;
+        }
+
+        //average the two sensors in the room
+        val += valb;
+        val = val/2.0;
+
         if( ((val + pval)/2.0) < target) {   //average this reading with the last
             cmd.append(":off.");
         } else {
@@ -81,9 +106,14 @@ QString Target::check() {
         }
         break;
 
-    case 1:
+    case 1:   //humidity target
         q.prepare("SELECT humid FROM Humid ORDER BY time DESC LIMIT 1");
-        q.exec();
+        if(!q.exec()) {
+            QMessageBox err;
+            err.setText("Data Base Error");
+            err.setInformativeText(q.lastError().text());
+            err.exec();
+        }
         while(q.next()) {
             val = q.value(0).toFloat();
         }
@@ -94,10 +124,12 @@ QString Target::check() {
         }
         break;
 
-    case 2:
+    case 2:   //C02 target
+        val = 0;
         break;
     }
     pval = val;  //set previous value for next run
+    //qDebug() << cmd;
     return cmd;
 }
 
@@ -123,12 +155,40 @@ void Target::on_updateBtn_clicked()
 {
     if(confirmChange()) {
         QSqlQuery q;
-        q.prepare("UPDATE Target SET target = :target WHERE relayID = :relayID");
-        q.bindValue(":target",ui->spinBox->value());
+        q.prepare("SELECT * FROM Target WHERE relayID = :relayID");
         q.bindValue(":relayID", relayID);
         if(!q.exec()) {
-            //query failed print error message here...
+            QMessageBox err;
+            err.setText("Data Base Error");
+            err.setInformativeText(q.lastError().text());
+            err.exec();
         }
+        if(q.next()){ //relay with that ID exists, update
+            q.clear();
+            q.prepare("UPDATE Target SET target = :target WHERE relayID = :relayID");
+            q.bindValue(":target",ui->spinBox->value());
+            q.bindValue(":relayID", relayID);
+            if(!q.exec()) {
+                //query failed print error message here...
+                QMessageBox err;
+                err.setText("Data Base Error");
+                err.setInformativeText(q.lastError().text());
+                err.exec();
+            }
+        } else { //no relay with that ID Insert new one
+            q.clear();
+            q.prepare("INSERT INTO Target (target, relayID) VALUES(:target, :relayID)");
+            q.bindValue(":target", ui->spinBox->value());
+            q.bindValue(":relayID", relayID);
+            if(!q.exec()) {
+                //query failed insert error here...
+                QMessageBox err;
+                err.setText("Data Base Error");
+                err.setInformativeText(q.lastError().text());
+                err.exec();
+            }
+        }
+        emit updateTargetSignal();
     }
 }
 
@@ -136,8 +196,13 @@ void Target::on_revertBtn_clicked()
 {
     QSqlQuery q;
     q.prepare("SELECT target FROM Target WHERE relayID = :relayID");
-    q.bindValue(":relayID",relayID);
-    q.exec();
+    q.bindValue(":relayID",relayID.toInt());
+    if(!q.exec()) {
+        QMessageBox err;
+        err.setText("Data Base Error");
+        err.setInformativeText(q.lastError().text());
+        err.exec();
+    }
     while(q.next()){
         ui->spinBox->setValue(q.value(0).toInt());
     }

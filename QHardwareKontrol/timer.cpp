@@ -35,6 +35,8 @@ Timer::Timer(QWidget *parent, int id) :
     ui->setupUi(this);
     relayID = id;
     this->on_revertBtn_clicked();   //read values from database
+
+    connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTimerSignal()));
 }
 
 Timer::~Timer()
@@ -51,7 +53,12 @@ QString Timer::check() {
     QTime off;
     q.prepare("SELECT onTime, offTime FROM Timer WHERE relayID = :relayID");
     q.bindValue(":relayID",relayID);
-    q.exec();
+    if(!q.exec()) {
+        QMessageBox err;
+        err.setText("Data Base Error");
+        err.setInformativeText(q.lastError().text());
+        err.exec();
+    }
     while(q.next()) {
         QString son = q.value(0).toString();
         QString soff = q.value(1).toString();
@@ -64,11 +71,13 @@ QString Timer::check() {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":on.");
+            //qDebug() << cmd;
             return cmd;
         } else {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":off.");
+            //qDebug() << cmd;
             return cmd;
         }
     } else if ( off < on ) {
@@ -76,17 +85,19 @@ QString Timer::check() {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":on.");
+            //qDebug() << cmd;
             return cmd;
         } else {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":off.");
+            //qDebug() << cmd;
             return cmd;
         }
     }
 }
 
-void Timer::setTimerLabel(QString label) {
+void Timer::setTitle(QString label) {
     ui->timerLabel->setTitle(label);
 }
 
@@ -114,27 +125,35 @@ void Timer::on_updateBtn_clicked()
     if(confirmChange()) {
         QSqlQuery q;
         q.prepare("SELECT * FROM Timer WHERE relayID = :relayID");
-        q.bindValue(":relayID", relayID);
+        q.bindValue(":relayID", relayID.toInt());
         q.exec();
         if(q.next()) { //relay with that ID exists... update
             q.clear();
-            q.prepare("UPDATE Timer SET onTime = :onTime, offTime = :offTime WHERE relayID = 1");
+            q.prepare("UPDATE Timer SET onTime = :onTime, offTime = :offTime WHERE relayID = :relayID");
             q.bindValue(":onTime",ui->onTmeSpinBox->time().toString("hh:mm"));
             q.bindValue(":offTime",ui->offTmeSpinBox->time().toString("hh:mm"));
+            q.bindValue(":relayID",relayID.toInt());
             if(!q.exec()) {
-                //Query failed, print error here ;)
+                QMessageBox err;
+                err.setText("Data Base Error");
+                err.setInformativeText(q.lastError().text());
+                err.exec();
             }
         } else {  //no relay ID so crete a new record
             q.clear();
             q.prepare("INSERT INTO Timer (onTime, offTime, relayID) VALUES(:onTime, :offTime, :relayID)");
             q.bindValue(":onTime",ui->onTmeSpinBox->time().toString("hh:mm"));
             q.bindValue(":offTime", ui->offTmeSpinBox->time().toString("hh:mm"));
-            q.bindValue(":relayID",1);
+            q.bindValue(":relayID",relayID.toInt());
             if(!q.exec()) {
-                //Query failed, print yer freakin hER ROaR
+                QMessageBox err;
+                err.setText("Data Base Error");
+                err.setInformativeText(q.lastError().text());
+                err.exec();
             }
         }
-        //TODO: Emit a signal to checkTime() in parent
+
+        emit updateTimerSignal();
     } else {  //confirm() returned false
 
     }
@@ -144,8 +163,13 @@ void Timer::on_revertBtn_clicked()
 {
     QSqlQuery q;
     q.prepare("SELECT onTime, offTime FROM Timer WHERE relayID = :relayID");
-    q.bindValue(":relayID", relayID);
-    q.exec();
+    q.bindValue(":relayID", relayID.toInt());
+    if(!q.exec()) {
+        QMessageBox err;
+        err.setText("Data Base Error");
+        err.setInformativeText(q.lastError().text());
+        err.exec();
+    }
     while(q.next()) {
         QTime on = QTime::fromString(q.value(0).toString(), "hh:mm");
         ui->onTmeSpinBox->setTime(on);
