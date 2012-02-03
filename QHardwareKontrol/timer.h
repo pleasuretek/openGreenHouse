@@ -55,7 +55,11 @@ private:
 
     QVariant relayID;
 
+    QTime onTime;
+    QTime offTime;
+
     bool confirmChange();
+    void cacheTimes();
 };
 
 #endif // TIMER_H

@@ -36,6 +36,7 @@ Timer::Timer(QWidget *parent, int id) :
     relayID = id;
     this->on_revertBtn_clicked();   //read values from database
 
+    cacheTimes();
     connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTimerSignal()));
 }
 
@@ -44,15 +45,10 @@ Timer::~Timer()
     delete ui;
 }
 
-
-QString Timer::check() {
-    QString cmd;  //serial command
-    QTime now = QTime::currentTime();
+void Timer::cacheTimes() {
     QSqlQuery q;
-    QTime on;
-    QTime off;
     q.prepare("SELECT onTime, offTime FROM Timer WHERE relayID = :relayID");
-    q.bindValue(":relayID",relayID);
+    q.bindValue(":relayID",relayID.toInt());
     if(!q.exec()) {
         QMessageBox err;
         err.setText("Data Base Error");
@@ -62,12 +58,17 @@ QString Timer::check() {
     while(q.next()) {
         QString son = q.value(0).toString();
         QString soff = q.value(1).toString();
-        on = QTime::fromString(son,"hh:mm");
-        off = QTime::fromString(soff,"hh:mm");
+        onTime = QTime::fromString(son,"hh:mm");
+        offTime = QTime::fromString(soff,"hh:mm");
     }
+}
 
-    if (off > on) {
-        if((now > on) && (now < off)) {
+QString Timer::check() {
+    QString cmd;  //serial command
+    QTime now = QTime::currentTime();
+
+    if (offTime > onTime) {
+        if((now > onTime) && (now < offTime)) {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":on.");
@@ -80,8 +81,8 @@ QString Timer::check() {
             //qDebug() << cmd;
             return cmd;
         }
-    } else if ( off < on ) {
-        if(((now > on) && (now > off)) || (now < off )) {
+    } else if ( offTime < onTime ) {
+        if(((now > onTime) && (now > offTime)) || (now < offTime )) {
             cmd.clear();
             cmd.append(relayID.toString());
             cmd.append(":on.");
@@ -152,7 +153,7 @@ void Timer::on_updateBtn_clicked()
                 err.exec();
             }
         }
-
+        cacheTimes();
         emit updateTimerSignal();
     } else {  //confirm() returned false
 

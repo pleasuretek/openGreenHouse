@@ -47,16 +47,18 @@ signals:
 
 private slots:
     void on_updateBtn_clicked();
-
-    void on_revertBtn_clicked();
+    void cacheTarget();
 
 private:
     Ui::Target *ui;
 
     QVariant relayID;
     QVariant mode;
-    float pval;
+
+    float target, val, pval;
+
     bool confirmChange();
+
 };
 
 #endif // TARGET_H

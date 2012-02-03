@@ -36,8 +36,9 @@ Target::Target(QWidget *parent, int id, int md) :
     relayID = id;
     mode = md;   //mode 0 = temps; 1 = humidity; 2 = c02
 
-    this->on_revertBtn_clicked();  //read values from database
+    cacheTarget();  //read values from database
     connect(ui->updateBtn, SIGNAL(clicked()), this, SIGNAL(updateTargetSignal()));
+    connect(ui->revertBtn, SIGNAL(clicked()), this, SLOT(cacheTarget()));
 }
 
 Target::~Target()
@@ -56,25 +57,11 @@ void Target::setLabel(QString label) {
 QString Target::check() {
 
     QString cmd = relayID.toString();
-
-    float target, val;
     QSqlQuery q;
-    q.prepare("SELECT target FROM Target WHERE relayID = :relayID");
-    q.bindValue(":relayID",relayID.toInt());
-    if(!q.exec()) {
-        QMessageBox err;
-        err.setText("Data Base Error");
-        err.setInformativeText(q.lastError().text());
-        err.exec();
-    }
-    while(q.next()) {
-        target = q.value(0).toFloat();
-    }
 
     switch(mode.toInt()){
-    case 0:    //temperature target
+    case 0:    //temperature value
         float valb;
-
         q.prepare("SELECT temp FROM Temps ORDER BY time DESC LIMIT 3"); //select address instead..
         if(!q.exec()) {
             QMessageBox err;
@@ -82,7 +69,6 @@ QString Target::check() {
             err.setInformativeText(q.lastError().text());
             err.exec();
         }
-
         int it;
         it = 0;
         while (q.next()) {
@@ -94,16 +80,9 @@ QString Target::check() {
             }
             it++;
         }
-
         //average the two sensors in the room
         val += valb;
         val = val/2.0;
-
-        if( ((val + pval)/2.0) < target) {   //average this reading with the last
-            cmd.append(":off.");
-        } else {
-            cmd.append(":on.");
-        }
         break;
 
     case 1:   //humidity target
@@ -117,17 +96,18 @@ QString Target::check() {
         while(q.next()) {
             val = q.value(0).toFloat();
         }
-        if (((val+pval)/2) < target) {
-            cmd.append(":off.");
-        } else {
-            cmd.append(":on.");
-        }
         break;
-
     case 2:   //C02 target
-        val = 0;
         break;
     }
+
+
+    if( ((val + pval)/2.0) < target) {   //average this reading with the last
+        cmd.append(":off.");
+    } else {
+        cmd.append(":on.");
+    }
+
     pval = val;  //set previous value for next run
     //qDebug() << cmd;
     return cmd;
@@ -188,12 +168,12 @@ void Target::on_updateBtn_clicked()
                 err.exec();
             }
         }
+        cacheTarget();
         emit updateTargetSignal();
     }
 }
 
-void Target::on_revertBtn_clicked()
-{
+void Target::cacheTarget() {
     QSqlQuery q;
     q.prepare("SELECT target FROM Target WHERE relayID = :relayID");
     q.bindValue(":relayID",relayID.toInt());
@@ -203,8 +183,8 @@ void Target::on_revertBtn_clicked()
         err.setInformativeText(q.lastError().text());
         err.exec();
     }
-    while(q.next()){
-        ui->spinBox->setValue(q.value(0).toInt());
+    while(q.next()) {
+        target = q.value(0).toFloat();  //cache target from database
+        ui->spinBox->setValue(q.value(0).toInt());  //set ui to value in database too (reuse query)
     }
 }
-
