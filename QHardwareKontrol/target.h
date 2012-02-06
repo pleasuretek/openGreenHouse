@@ -53,7 +53,7 @@ private:
     Ui::Target *ui;
 
     QVariant relayID;
-    QVariant mode;
+    QVariant mode;   //0 for temp; 1 for humid; 2 for C02
 
     float target, val, pval;
 

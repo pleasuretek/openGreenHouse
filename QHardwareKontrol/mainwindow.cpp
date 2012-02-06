@@ -46,8 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     relay02->setTitle("Bloom Osc Fan Timer 1");
     connect(relay02, SIGNAL(update()), this, SLOT(checkRelays()));
 
-    relay03 = new Timer(this,3);   //lowpower relay
-    relay03->setTitle("Veg Fan Timer");
+    relay03 = new Tincrement(this,3);   //lowpower relay
+    relay03->setTitle("Clone Pump Timer");
     connect(relay03, SIGNAL(update()), this, SLOT(checkRelays()));
 
     relay04 = new Timer(this,4);   //high power relay
@@ -56,11 +56,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     relay05 = new Target(this,5,1);    //high power relay
     relay05->setTitle("Target Humid");
-    connect(relay05, SIGNAL(update), this, SLOT(checkRelays()));
+    connect(relay05, SIGNAL(update()), this, SLOT(checkRelays()));
 
     relay06 = new Target(this,6,0);   //high power relay
     relay06->setTitle("Bloom Target Temp");
-    connect(relay06, SIGNAL(update), this, SLOT(checkRelays()));
+    connect(relay06, SIGNAL(update()), this, SLOT(checkRelays()));
 
     QWidget *main = new QWidget(this);
     QWidget *relayKeeper = new QWidget(this);
@@ -87,10 +87,13 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setCentralWidget(main);
 
 
-    timer = new QTimer(this); //start relay timer
+    timer = new QTimer(this); //start timer
     connect(timer, SIGNAL(timeout()), this, SLOT(checkRelays()));   //make checkRelays fire on timer signal
     connect(timer, SIGNAL(timeout()), this, SLOT(checkSensors()));  //make checkSensors fire on timer signal
-    timer->start(20000);   //set to 300000  = 5minutes
+    timer->start(120000);   //set to 120000  = 2minutes
+    hiResTimer = new QTimer(this);
+    connect(hiResTimer, SIGNAL(timeout()), this, SLOT(checkHiRes()));
+    hiResTimer->start(1000);  //check every second
 
     checkRelays();  //set relays on startup
     checkSensors();  //give the sensors a check too
@@ -174,5 +177,13 @@ void MainWindow::checkSensors() {
     serial.write(sens->checkHumidCmd());
     //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
+}
+
+void MainWindow::checkHiRes() {
+    QTime now = QTime::currentTime();
+    QString ck = relay03->check(now);
+    if(ck != "") {
+        serial.write(ck);
+    }
 }
 

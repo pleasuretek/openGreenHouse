@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sensors.h"
 #include "timer.h"
 #include "target.h"
+#include "tincrement.h"
 
 
 namespace Ui {
@@ -52,13 +53,14 @@ private:
     QAsyncSerial serial;
     QSqlDatabase db;
     QTimer *timer;
+    QTimer *hiResTimer;  //for a few seconds timing.. attach only light lifting to fire every few seconds
 
     Sensors *sens;
 
     //TODO: make Timer and Target inheret from same base abstract class.. implement better polymorphism here
     Timer *relay01;
     Timer *relay02;
-    Timer *relay03;
+    Tincrement *relay03;
     Timer *relay04;
     Target *relay05;
     Target *relay06;
@@ -73,6 +75,7 @@ private slots:
     void onLineReceived(QString data);
     void checkRelays();
     void checkSensors();
+    void checkHiRes();
 
 };
 
