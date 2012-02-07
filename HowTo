@@ -1,0 +1,45 @@
+This file is intended to help get an opepnGreenhouse system up and running. This file and instructions are under GPL and offer no warranty or intended purpose. A copy of the GPL is distributed with this file.
+
+The system consists of two parts, an arduino microcontroller (or similar board), and a computer. The computer can range from a mac mini, to old laptop running linux, to beagleboard.
+
+The scope of this project ranges from electrician to c++ programmer. Remember to be careful when working with electricity, and if you are unsure on what you are doing, stop and call a profesional for help. I assume no responsibility if you harm/kill yourself or start an electrical fire- therefore any party responsible for the design and or code of the openGreenhouse project are not in any way responsible for any damage to persons or property.
+
+
+*The micro-----------------------------------------
+
+Currently the system communicates to the micro via serial (usb or rs-232). There is a version (although at the time of this writing it is not complete and has no associated software controller) that supports network (ethernet or wifi) communication. The files for the arduino environment are located in the directory labeled 'microcontroller'. gardenControl is the serial version, and gardenControl_ethernet is the network version.  We recomend using an Arduino Mega or compatible board as it allows you to use more humidity sensors and more relays. While an Arduino Uno is fine for small indoor gardens, a Mega should be used in commercial greenhouses.
+
+The default gardenControl.pde has the temperature one-wire on pin 2 (all temp sensors can communicate on the same pin). There is one humidity sensor on pin 3 (each humidity sensor needs its own pin). I use the rest of the digital out pins as relays and set them as output.
+
+Temperature sensors:
+The system currently uses Maxim (Dallas) DS18B20 temperature sensors. these require the onewire libraries from http://milesburton.com/Dallas_Temperature_Control_Library.
+
+Humidity sensors:
+The system currently uses DHT-22 humidity sensors. The libraries to use the sensors are from adafruit located at https://github.com/adafruit/DHT-sensor-library.
+
+Relays:
+I use solid state relays as they are much better suited for 120v loads being switched by a microcontroller. They use triacs to switch the load, and most have internal opto-isolation to keep the arduino safe. As for model numbers of relays to use, it depends on the load you are switching and brand(cost vs convenience). I will give model numbers for two manufacturers of solid state relays, Opto-22 are manufactured in the USA (highly recomended if you are in the US) or Crydom if you are international (or on a tight budget).
+
+For small load (1-7Amps) switching like fans, pumps, relay triggers(for bigger lighting controllers), I use (opto22) 120D10  or (crydom) CSW2410.  For Medium load (10-20Amps) switching like A/C units and DeHumidifiers, I use (opto22) 120D25 or (crydom) CSW2425. Although some specialty greenhouse equipment requires large loads at 120v, I will not include such relays as they should be chosen depending on specific needs by a qualified person.
+
+240v loads (such as ballasts or groups of ballasts) should be grouped in their own electrical enclosure (lighting controller or other high power relay junction) and should be switched via 'trigger cable'. A trigger cable is a 120v cable that can be connected to a low power relay to switch the high power relay. This is the prefered method of controlling large loads (240-600v).  Reminder: if you are not a qualified electrician, do not get near large loads as the smallest mistake can kill you. Call a licensed electrician.
+
+
+*The Computer ------------------------------- 
+The real brain of the system is the computer. The software runs all the timers and sends the control messages to the arduino to physically control. The software is written in C++ with Qt libraries for GUI and much internal cross-platform functionality, and boost for serial communications and threading. You can run this software on any computer that has a USB or Serial(rs-232) port. The processing requirements are minimal, it is designed to be able to run on embedded systems as well as spare computers. On to the customization... 
+
+To build the software yourself you should have a Qt development environment setup, have boost libs installed, and qwt libs (for data plotting). 
+
+To fulfill build depends on ubuntu:
+apt-get install qt-creator libboost-dev libqwt-dev
+
+To fulfill runtime depends on ubuntu:
+apt-get install mysql-common mysql-server mysql-client libqtgui4 libqtcore4 libqt4-sql libqt4-sql-mysql libqwt6
+
+You customize your environment in the MainWindow class. The two files you need to edit are mainwindow.h and mainwindow.cpp. The mainwindow.h is the header file, here is where the relay types are defined. To make a relay number do a specific task, change the type. The optional types are 'Timer', 'Target', and 'Tincrement'. Timer is a single shot timer with an on time and an off time. Target is a set point controller, that can keep a parameter at a givin target via sensor readings. Tincrement is an incremental timer, that you can set for x seconds on and y seconds off.  Each object accepts an ID which corresponds to the relay number set on the arduino. You can create as many or as little as you need for your environment.
+
+Once you have changed the header file, move to the mainwindow.cpp file. in the constructor of mainwindow the relays are created and added into the layout. Change the Type declarations to match those you decided upon in the header file. 
+Next setup database access by adding your mysql username and password. These are set in the function dbConnect(). Setting this up in mysql is outside the scope of this document.
+Now at the bottom of mainwindow.cpp there are two timers, one that fires every two minutes and one that fires every second. Most relays should be controlled with two minute precision and set to check in the function checkRelays(). If you need greater precision (root misting pumps, etc) set the check up in checkHiRes(). The code should provide adequate examples to follow.
+
+You are all setup, Welcome to openGreenHouse.

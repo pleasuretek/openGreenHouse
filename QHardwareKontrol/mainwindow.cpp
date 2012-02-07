@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
     sens = new Sensors(this);
     connect(sens, SIGNAL(updateSensorBtnClicked()), this, SLOT(checkSensors()));
 
+
+
+//Start Relay Customization -----------------------------
     relay01 = new Timer(this,1);   //lowpower relay
     relay01->setTitle("Bloom Light Timer");
     connect(relay01, SIGNAL(update()), this, SLOT(checkRelays()));
@@ -61,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     relay06 = new Target(this,6,0);   //high power relay
     relay06->setTitle("Bloom Target Temp");
     connect(relay06, SIGNAL(update()), this, SLOT(checkRelays()));
+//End Relay Customization --------------------------------
+
 
     QWidget *main = new QWidget(this);
     QWidget *relayKeeper = new QWidget(this);
@@ -114,7 +119,7 @@ void MainWindow::dbConnect(){
     db.setHostName("localhost");
     db.setDatabaseName("SensorData");
     db.setUserName("root");
-    db.setPassword("fuck.Y0u!23garden");  //Enter password for database user
+    db.setPassword("xxx");  //Enter password for database user
 
     if(!db.open()) {
         qDebug() << "Database Error : ";
