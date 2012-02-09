@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_target.h"
 
 Target::Target(QWidget *parent) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Target)
 {
     ui->setupUi(this);
@@ -29,7 +29,7 @@ Target::Target(QWidget *parent) :
 }
 
 Target::Target(QWidget *parent, int id, int md) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Target)
 {
     ui->setupUi(this);
@@ -111,6 +111,10 @@ QString Target::check() {
     pval = val;  //set previous value for next run
     //qDebug() << cmd;
     return cmd;
+}
+
+QString Target::check(QTime) {
+    return "";
 }
 
 bool Target::confirmChange() {

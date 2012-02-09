@@ -5,12 +5,13 @@
 #include <QtSql>
 #include <QTime>
 #include <QMessageBox>
+#include "relay.h"
 
 namespace Ui {
     class Tincrement;
 }
 
-class Tincrement : public QWidget
+class Tincrement : public Relay
 {
     Q_OBJECT
 
@@ -19,6 +20,7 @@ public:
     explicit Tincrement(QWidget *parent, int id);
     ~Tincrement();
 
+    QString check();  //dfine from virtual
     QString check(QTime);
     void setTitle(QString);
     QStringList onTime;   //increment string is formated like: 5.0,3    5.0 is the double spin box ',' is the delim and 3 is the index for combo (switch)

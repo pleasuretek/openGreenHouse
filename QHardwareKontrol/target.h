@@ -23,13 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QWidget>
 #include <QtSql>
 #include <QMessageBox>
+#include "relay.h"
 
 
 namespace Ui {
     class Target;
 }
 
-class Target : public QWidget
+class Target : public Relay
 {
     Q_OBJECT
 
@@ -41,6 +42,7 @@ public:
     void setTitle(QString);
     void setLabel(QString);
     QString check();
+    QString check(QTime);
 
 signals:
     void update();

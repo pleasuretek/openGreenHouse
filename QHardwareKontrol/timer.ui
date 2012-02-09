@@ -6,18 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>254</width>
-    <height>186</height>
+    <width>225</width>
+    <height>157</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>150</width>
+    <height>100</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QGroupBox" name="timerLabel">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Timer</string>
+      <string>GroupBox</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>

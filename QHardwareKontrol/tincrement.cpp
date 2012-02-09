@@ -2,7 +2,7 @@
 #include "ui_tincrement.h"
 
 Tincrement::Tincrement(QWidget *parent) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Tincrement)
 {
     ui->setupUi(this);
@@ -11,7 +11,7 @@ Tincrement::Tincrement(QWidget *parent) :
 }
 
 Tincrement::Tincrement(QWidget *parent, int id) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Tincrement)
 {
     ui->setupUi(this);
@@ -49,6 +49,10 @@ void Tincrement::cacheTimes() {
         onTime = son.split(':');
         offTime = soff.split(':');
     }
+}
+
+QString Tincrement::check() {
+    return "";
 }
 
 QString Tincrement::check(QTime now) {

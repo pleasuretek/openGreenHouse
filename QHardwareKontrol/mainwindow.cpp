@@ -38,9 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
     sens = new Sensors(this);
     connect(sens, SIGNAL(updateSensorBtnClicked()), this, SLOT(checkSensors()));
 
-
+    tracker = new Tracker(this);
 
 //Start Relay Customization -----------------------------
+    //TODO: put this in a reusable function and pass a TimerMode as to which object to assing, this will make creating from a prefrences object easier.
     relay01 = new Timer(this,1);   //lowpower relay
     relay01->setTitle("Bloom Light Timer");
     connect(relay01, SIGNAL(update()), this, SLOT(checkRelays()));
@@ -66,36 +67,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(relay06, SIGNAL(update()), this, SLOT(checkRelays()));
 //End Relay Customization --------------------------------
 
-
-    QWidget *main = new QWidget(this);
-    QWidget *relayKeeper = new QWidget(this);
-
-    QVBoxLayout *relayLayout = new QVBoxLayout();
-    relayLayout->addWidget(relay01);
-    relayLayout->addWidget(relay02);
-    relayLayout->addWidget(relay03);
-    relayLayout->addWidget(relay04);
-    relayLayout->addWidget(relay05);
-    relayLayout->addWidget(relay06);
-
-    relayKeeper->setLayout(relayLayout);
-
-    QScrollArea *sa = new QScrollArea(this);
-    sa->setWidget(relayKeeper);
-
-    QVBoxLayout *vl = new QVBoxLayout();
-    vl->addWidget(sens);
-    vl->addWidget(sa);
-
-
-    main->setLayout(vl);
-    this->setCentralWidget(main);
+    buildIFace();
 
 
     timer = new QTimer(this); //start timer
     connect(timer, SIGNAL(timeout()), this, SLOT(checkRelays()));   //make checkRelays fire on timer signal
     connect(timer, SIGNAL(timeout()), this, SLOT(checkSensors()));  //make checkSensors fire on timer signal
     timer->start(120000);   //set to 120000  = 2minutes
+
     hiResTimer = new QTimer(this);
     connect(hiResTimer, SIGNAL(timeout()), this, SLOT(checkHiRes()));
     hiResTimer->start(1000);  //check every second
@@ -119,7 +98,7 @@ void MainWindow::dbConnect(){
     db.setHostName("localhost");
     db.setDatabaseName("SensorData");
     db.setUserName("root");
-    db.setPassword("xxx");  //Enter password for database user
+    db.setPassword("fuck.Y0u!23garden");  //Enter password for database user
 
     if(!db.open()) {
         qDebug() << "Database Error : ";
@@ -127,6 +106,39 @@ void MainWindow::dbConnect(){
         qFatal("Failed to connect to database.");
     }
 
+}
+
+void MainWindow::buildIFace(){
+
+    QWidget *main = new QWidget(this);
+    QWidget *right = new QWidget(this);
+
+    QWidget *relayKeeper = new QWidget(this);
+    QVBoxLayout *relayLayout = new QVBoxLayout();
+    relayLayout->addWidget(relay01);
+    relayLayout->addWidget(relay02);
+    relayLayout->addWidget(relay03);
+    relayLayout->addWidget(relay04);
+    relayLayout->addWidget(relay05);
+    relayLayout->addWidget(relay06);
+
+    relayKeeper->setLayout(relayLayout);
+
+    QScrollArea *sa = new QScrollArea(this);
+    sa->setWidget(relayKeeper);
+
+    QVBoxLayout *vl = new QVBoxLayout();
+    vl->addWidget(sens);
+    vl->addWidget(sa);
+
+    right->setLayout(vl);
+
+    QHBoxLayout *hl = new QHBoxLayout();
+    hl->addWidget(tracker);
+    hl->addWidget(right);
+
+    main->setLayout(hl);
+    this->setCentralWidget(main);
 }
 
 void MainWindow::onLineReceived(QString data) {

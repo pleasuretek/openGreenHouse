@@ -18,7 +18,10 @@ SOURCES += main.cpp\
     sensors.cpp \
     timer.cpp \
     target.cpp \
-    tincrement.cpp
+    tincrement.cpp \
+    relay.cpp \
+    tracker.cpp \
+    entry.cpp
 
 HEADERS  += mainwindow.h \
     QAsyncSerial.h \
@@ -27,14 +30,20 @@ HEADERS  += mainwindow.h \
     sensors.h \
     timer.h \
     target.h \
-    tincrement.h
+    tincrement.h \
+    relay.h \
+    tracker.h \
+    entry.h
 
 FORMS    += mainwindow.ui \
     sensorgraph.ui \
     sensors.ui \
     timer.ui \
     target.ui \
-    tincrement.ui
+    tincrement.ui \
+    relay.ui \
+    tracker.ui \
+    entry.ui
 
 LIBS += -L/usr/include \
     -lboost_system \

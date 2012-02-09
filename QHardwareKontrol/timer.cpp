@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_timer.h"
 
 Timer::Timer(QWidget *parent) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Timer)
 {
     ui->setupUi(this);
@@ -29,7 +29,7 @@ Timer::Timer(QWidget *parent) :
 }
 
 Timer::Timer(QWidget *parent, int id) :
-    QWidget(parent),
+    Relay(parent),
     ui(new Ui::Timer)
 {
     ui->setupUi(this);
@@ -61,6 +61,12 @@ void Timer::cacheTimes() {
         onTime = QTime::fromString(son,"hh:mm");
         offTime = QTime::fromString(soff,"hh:mm");
     }
+}
+
+
+QString Timer::check() {  //define check() only because it is virtual in abstract base
+    QString cmd;
+    return cmd;
 }
 
 QString Timer::check(QTime now) {
@@ -98,7 +104,7 @@ QString Timer::check(QTime now) {
 }
 
 void Timer::setTitle(QString label) {
-    ui->timerLabel->setTitle(label);
+    ui->groupBox->setTitle(label);
 }
 
 

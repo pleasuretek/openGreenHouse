@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "timer.h"
 #include "target.h"
 #include "tincrement.h"
+#include "tracker.h"
 
 
 namespace Ui {
@@ -57,14 +58,16 @@ private:
 
     Sensors *sens;
 
-    //TODO: make Timer and Target inheret from same base abstract class.. implement better polymorphism here
-    Timer *relay01;
-    Timer *relay02;
-    Tincrement *relay03;
-    Timer *relay04;
-    Target *relay05;
-    Target *relay06;
+    enum TimerMode { TIMER, INCREMENT, TARGET };
 
+    Relay *relay01;
+    Relay *relay02;
+    Relay *relay03;
+    Relay *relay04;
+    Relay *relay05;
+    Relay *relay06;
+
+    Tracker *tracker;
 
 
     void dbConnect();
@@ -72,6 +75,7 @@ private:
 
 
 private slots:
+    void buildIFace();
     void onLineReceived(QString data);
     void checkRelays();
     void checkSensors();

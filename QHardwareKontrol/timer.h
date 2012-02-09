@@ -24,12 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtSql>
 #include <QTime>
 #include <QMessageBox>
+#include "relay.h"
 
 namespace Ui {
     class Timer;
 }
 
-class Timer : public QWidget
+class Timer : public Relay
 {
     Q_OBJECT
 
@@ -38,11 +39,9 @@ public:
     explicit Timer(QWidget *parent, int id);
     ~Timer();
 
+    QString check(); //must define from pure virtual
     QString check(QTime);
     void setTitle(QString);
-
-signals:
-    void update();
 
 
 private slots:
