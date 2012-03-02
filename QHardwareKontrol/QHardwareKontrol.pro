@@ -49,4 +49,4 @@ LIBS += -L/usr/include \
     -lboost_system \
     -lboost_thread \
     -lboost_date_time \
-    -lqwt
+    -lqwt-qt4

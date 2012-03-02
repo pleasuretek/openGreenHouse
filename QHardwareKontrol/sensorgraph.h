@@ -3,9 +3,9 @@
 
 #include <QWidget>
 #include <QtSql>
-#include "qwt/qwt.h"
-#include "qwt/qwt_plot.h"
-#include "qwt/qwt_plot_curve.h"
+#include "qwt-qt4/qwt.h"
+#include "qwt-qt4/qwt_plot.h"
+#include "qwt-qt4/qwt_plot_curve.h"
 
 #define SAMPLES 200
 
